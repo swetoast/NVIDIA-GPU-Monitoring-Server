@@ -34,24 +34,34 @@ To run the server, execute the script with Python. The server will start and pri
 ## Examples for Homeassistant
 ```
 sensor:
+  GNU nano 6.2                                                                                                                            sensors.yaml *
   - platform: rest
-    resource: http://192.168.0.3:5000/powerusage
+    resource: http://192.168.1.3:5000/powerusage
     name: GPU Power Usage
     value_template: '{{ value_json[0] }}'
+    unit_of_measurement: 'W'
+
   - platform: rest
-    resource: http://192.168.0.3:5000/temperature
+    resource: http://192.168.1.3:5000/temperature
     name: GPU Temperature
     value_template: '{{ value_json[0] }}'
+    unit_of_measurement: '°C'
+
   - platform: rest
-    resource: http://192.168.0.3:5000/fanspeed
+    resource: http://192.168.1.3:5000/fanspeed
     name: GPU Fan Speed
     value_template: '{{ value_json[0] }}'
+    unit_of_measurement: '%'
+
   - platform: rest
-    resource: http://192.168.0.3:5000/memoryusage
+    resource: http://192.168.1.3:5000/memoryusage
     name: GPU Memory Usage
     value_template: '{{ value_json[0] }}'
+    unit_of_measurement: '%'
+
   - platform: rest
-    resource: http://192.168.0.3:5000/gputil
+    resource: http://192.168.1.3:5000/gpuutil
     name: GPU Utilization
     value_template: '{{ value_json[0] }}'
+    unit_of_measurement: '%'
 ```
