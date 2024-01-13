@@ -1,4 +1,4 @@
-# nvidia-endpoint-server
+# Nvidia Endpoint Server
 a test server for nvidia-smi to get values imported into homeassistant **USE ON OWN RISK**
 
 start the server on your linux machine using your favorite techique then add this to config of HA
