@@ -34,6 +34,60 @@ def get_gpu_util():
     gpu_util = [float(re.search(r'\d+', line).group()) for line in smi_output.split('\n') if line.strip()]
     return jsonify(gpu_util)
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return """
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        h2 {
+            color: #666;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+            color: #333;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>NVIDIA Endpoint Server</h1>
+        <h2>Available Endpoints:</h2>
+        <ul>
+            <li>/powerusage: Get the power usage of the GPU</li>
+            <li>/temperature: Get the temperature of the GPU</li>
+            <li>/fanspeed: Get the fan speed of the GPU</li>
+            <li>/memoryusage: Get the memory usage of the GPU</li>
+            <li>/gpuutil: Get the GPU utilization</li>
+        </ul>
+    </div>
+</body>
+</html>
+    """
+
 if __name__ == '__main__':
     print("Server is starting...")
     print("Available endpoints:")
