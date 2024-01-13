@@ -56,7 +56,7 @@ sensor:
     resource: http://192.168.1.3:5000/memoryusage
     name: GPU Memory Usage
     value_template: '{{ value_json[0] }}'
-    unit_of_measurement: 'mb'
+    unit_of_measurement: 'Mb'
 
   - platform: rest
     resource: http://192.168.1.3:5000/gpuutil
