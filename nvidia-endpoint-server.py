@@ -28,6 +28,12 @@ def get_memory_usage():
     memory_usage = [float(re.search(r'\d+', line).group()) for line in smi_output.split('\n') if line.strip()]
     return jsonify(memory_usage)
 
+@app.route('/gpuutil', methods=['GET'])
+def get_gpu_util():
+    smi_output = subprocess.check_output(['nvidia-smi', '--query-gpu=utilization.gpu', '--format=csv,noheader,nounits']).decode()
+    gpu_util = [float(re.search(r'\d+', line).group()) for line in smi_output.split('\n') if line.strip()]
+    return jsonify(gpu_util)
+
 if __name__ == '__main__':
     print("Server is starting...")
     print("Available endpoints:")
@@ -35,4 +41,5 @@ if __name__ == '__main__':
     print("2. /temperature: Get the temperature of the GPU")
     print("3. /fanspeed: Get the fan speed of the GPU")
     print("4. /memoryusage: Get the memory usage of the GPU")
+    print("5. /gpuutil: Get the GPU utilization")
     app.run(host='0.0.0.0', port=5000)
