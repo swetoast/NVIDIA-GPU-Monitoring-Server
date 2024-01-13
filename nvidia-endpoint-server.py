@@ -70,6 +70,14 @@ def page_not_found(e):
             border-radius: 5px;
             box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
         }
+        a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+        a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -77,11 +85,11 @@ def page_not_found(e):
         <h1>NVIDIA Endpoint Server</h1>
         <h2>Available Endpoints:</h2>
         <ul>
-            <li>/powerusage: Get the power usage of the GPU</li>
-            <li>/temperature: Get the temperature of the GPU</li>
-            <li>/fanspeed: Get the fan speed of the GPU</li>
-            <li>/memoryusage: Get the memory usage of the GPU</li>
-            <li>/gpuutil: Get the GPU utilization</li>
+            <li><a href='/powerusage'>/powerusage: Get the power usage of the GPU</a></li>
+            <li><a href='/temperature'>/temperature: Get the temperature of the GPU</a></li>
+            <li><a href='/fanspeed'>/fanspeed: Get the fan speed of the GPU</a></li>
+            <li><a href='/memoryusage'>/memoryusage: Get the memory usage of the GPU</a></li>
+            <li><a href='/gpuutil'>/gpuutil: Get the GPU utilization</a></li>
         </ul>
     </div>
 </body>
