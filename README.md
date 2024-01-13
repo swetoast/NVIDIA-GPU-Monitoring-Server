@@ -30,3 +30,23 @@ The server provides the following endpoints:
 ## Running the Server
 
 To run the server, execute the script with Python. The server will start and print out the available endpoints. Depending on the configuration, the server may run with or without SSL.
+
+## Examples for Homeassistant
+```
+sensor:
+  - platform: rest
+    resource: http://192.168.0.3:5000/powerusage
+    name: GPU Power Usage
+  - platform: rest
+    resource: http://192.168.0.3:5000/temperature
+    name: GPU Temperature
+  - platform: rest
+    resource: http://192.168.0.3:5000/fanspeed
+    name: GPU Fan Speed
+  - platform: rest
+    resource: http://192.168.0.3:5000/memoryusage
+    name: GPU Memory Usage
+  - platform: rest
+    resource: http://192.168.0.3:5000/gputil
+    name: GPU Utilization
+```
