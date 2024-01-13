@@ -6,7 +6,7 @@ import os
 
 # Load the configuration variables
 config = configparser.ConfigParser()
-config.read('config.conf')
+config.read('nvidia-endpoint-server.conf')
 
 app = Flask('nvidia endpoint server')
 
