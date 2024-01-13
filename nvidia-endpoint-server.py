@@ -1,6 +1,12 @@
 from flask import Flask, jsonify
 import subprocess
 import re
+import configparser
+import os
+
+# Load the configuration variables
+config = configparser.ConfigParser()
+config.read('config.conf')
 
 app = Flask('nvidia endpoint server')
 
@@ -104,4 +110,18 @@ if __name__ == '__main__':
     print("3. /fanspeed: Get the fan speed of the GPU")
     print("4. /memoryusage: Get the memory usage of the GPU")
     print("5. /gpuutil: Get the GPU utilization")
-    app.run(host='0.0.0.0', port=5000)
+
+    # Use the configuration variables
+    host = config.get('DEFAULT', 'HOST')
+    port = config.getint('DEFAULT', 'PORT')
+    use_https = config.getboolean('DEFAULT', 'USE_HTTPS')
+    cert_path = config.get('DEFAULT', 'CERT_PATH')
+    key_path = config.get('DEFAULT', 'KEY_PATH')
+
+    if use_https:
+        # Run the server with SSL
+        context = (cert_path, key_path)
+        app.run(host=host, port=port, ssl_context=context)
+    else:
+        # Run the server without SSL
+        app.run(host=host, port=port)
