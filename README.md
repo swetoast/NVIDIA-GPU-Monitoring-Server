@@ -34,7 +34,6 @@ To run the server, execute the script with Python. The server will start and pri
 ## Examples for Homeassistant
 ```
 sensor:
-  GNU nano 6.2                                                                                                                            sensors.yaml *
   - platform: rest
     resource: http://192.168.1.3:5000/powerusage
     name: GPU Power Usage
