@@ -19,3 +19,5 @@ sensor:
   - platform: rest
     resource: http://192.168.0.3:5000/memoryusage
     name: GPU Memory Usage
+    resource: http://192.168.0.3:5000/gpuutil
+    name: GPU utilization
