@@ -57,18 +57,18 @@ sensor:
   - platform: rest
     resource: http://IP_ADDRESS:PORT/fanspeed
     name: GPU Fan Speed
-    value_template: '{{ value_json.fanspeed }}'
+    value_template: '{{ value_json.fan_speed }}'
     unit_of_measurement: '%'
 
   - platform: rest
     resource: http://IP_ADDRESS:PORT/memoryusage
     name: GPU Memory Usage
-    value_template: '{{ value_json.memoryusage }}'
+    value_template: '{{ value_json.memory_usage }}'
     unit_of_measurement: 'Mb'
 
   - platform: rest
     resource: http://IP_ADDRESS:PORT/gpuutil
     name: GPU Utilization
-    vvalue_template: '{{ value_json.gpuutil }}'
+    vvalue_template: '{{ value_json.gpu_util }}'
     unit_of_measurement: '%'
 ```
