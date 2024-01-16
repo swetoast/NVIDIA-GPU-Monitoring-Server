@@ -37,7 +37,7 @@ sensor:
   - platform: rest
     resource: http://IP_ADDRESS:PORT/powerusage
     name: GPU Power Usage
-    value_template: '{{ value_json[0] }}'
+    value_template: '{{ value_json.power_usage }}'
     unit_of_measurement: 'W'
     device_class: energy
     state_class: measurement
@@ -51,24 +51,24 @@ sensor:
   - platform: rest
     resource: http://IP_ADDRESS:PORT/temperature
     name: GPU Temperature
-    value_template: '{{ value_json[0] }}'
+    value_template: '{{ value_json.temperature }}'
     unit_of_measurement: '°C'
 
   - platform: rest
     resource: http://IP_ADDRESS:PORT/fanspeed
     name: GPU Fan Speed
-    value_template: '{{ value_json[0] }}'
+    value_template: '{{ value_json.fanspeed }}'
     unit_of_measurement: '%'
 
   - platform: rest
     resource: http://IP_ADDRESS:PORT/memoryusage
     name: GPU Memory Usage
-    value_template: '{{ value_json[0] }}'
+    value_template: '{{ value_json.memoryusage }}'
     unit_of_measurement: 'Mb'
 
   - platform: rest
     resource: http://IP_ADDRESS:PORT/gpuutil
     name: GPU Utilization
-    value_template: '{{ value_json[0] }}'
+    vvalue_template: '{{ value_json.gpuutil }}'
     unit_of_measurement: '%'
 ```
