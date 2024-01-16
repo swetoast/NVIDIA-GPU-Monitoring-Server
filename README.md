@@ -35,31 +35,39 @@ To run the server, execute the script with Python. The server will start and pri
 ```
 sensor:
   - platform: rest
-    resource: http://192.168.1.3:5000/powerusage
+    resource: http://IP_ADDRESS:PORT/powerusage
     name: GPU Power Usage
     value_template: '{{ value_json[0] }}'
     unit_of_measurement: 'W'
+    device_class: energy
+    state_class: measurement
+
+- platform: integration
+    source: sensor.gpu_power_usage
+    name: 'Example Energy Usage'
+    unit_prefix: k
+    unit_time: h
 
   - platform: rest
-    resource: http://192.168.1.3:5000/temperature
+    resource: http://IP_ADDRESS:PORT/temperature
     name: GPU Temperature
     value_template: '{{ value_json[0] }}'
     unit_of_measurement: '°C'
 
   - platform: rest
-    resource: http://192.168.1.3:5000/fanspeed
+    resource: http://IP_ADDRESS:PORT/fanspeed
     name: GPU Fan Speed
     value_template: '{{ value_json[0] }}'
     unit_of_measurement: '%'
 
   - platform: rest
-    resource: http://192.168.1.3:5000/memoryusage
+    resource: http://IP_ADDRESS:PORT/memoryusage
     name: GPU Memory Usage
     value_template: '{{ value_json[0] }}'
     unit_of_measurement: 'Mb'
 
   - platform: rest
-    resource: http://192.168.1.3:5000/gpuutil
+    resource: http://IP_ADDRESS:PORT/gpuutil
     name: GPU Utilization
     value_template: '{{ value_json[0] }}'
     unit_of_measurement: '%'
