@@ -4,7 +4,7 @@ import re
 import configparser
 import os
 
-app = Flask('nvidia endpoint server')
+app = Flask('NVIDIA GPU Monitoring Server')
 
 def query_gpu(query: str):
     try:
