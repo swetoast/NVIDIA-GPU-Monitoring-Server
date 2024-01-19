@@ -6,37 +6,35 @@ import os
 
 app = Flask('NVIDIA GPU Monitoring Server')
 
-def query_gpu(query: str):
-    try:
-        smi_output = subprocess.check_output(['nvidia-smi', '--query-gpu=' + query, '--format=csv,noheader,nounits']).decode()
-        match = re.search(r'\d+.\d+', smi_output)
-        if match is not None:
-            result = [float(match.group()) for line in smi_output.split('\n') if line.strip()]
-            return result[0] if result else None
-        else:
-            return None
-    except Exception as e:
-        return str(e)
-
 @app.route('/powerusage', methods=['GET'])
 def get_power_usage():
-    return jsonify({"power_usage": query_gpu('power.draw')})
+    smi_output = subprocess.check_output(['nvidia-smi', '--query-gpu=power.draw', '--format=csv,noheader,nounits']).decode()
+    power_usage = [float(re.search(r'\d+.\d+', line).group()) for line in smi_output.split('\n') if line.strip()]
+    return jsonify(power_usage)
 
 @app.route('/temperature', methods=['GET'])
 def get_temperature():
-    return jsonify({"temperature": query_gpu('temperature.gpu')})
+    smi_output = subprocess.check_output(['nvidia-smi', '--query-gpu=temperature.gpu', '--format=csv,noheader,nounits']).decode()
+    temperature = [float(re.search(r'\d+', line).group()) for line in smi_output.split('\n') if line.strip()]
+    return jsonify(temperature)
 
 @app.route('/fanspeed', methods=['GET'])
 def get_fan_speed():
-    return jsonify({"fan_speed": query_gpu('fan.speed')})
+    smi_output = subprocess.check_output(['nvidia-smi', '--query-gpu=fan.speed', '--format=csv,noheader,nounits']).decode()
+    fan_speed = [float(re.search(r'\d+', line).group()) for line in smi_output.split('\n') if line.strip()]
+    return jsonify(fan_speed)
 
 @app.route('/memoryusage', methods=['GET'])
 def get_memory_usage():
-    return jsonify({"memory_usage": query_gpu('memory.used')})
+    smi_output = subprocess.check_output(['nvidia-smi', '--query-gpu=memory.used', '--format=csv,noheader,nounits']).decode()
+    memory_usage = [float(re.search(r'\d+', line).group()) for line in smi_output.split('\n') if line.strip()]
+    return jsonify(memory_usage)
 
 @app.route('/gpuutil', methods=['GET'])
 def get_gpu_util():
-    return jsonify({"gpu_util": query_gpu('utilization.gpu')})
+    smi_output = subprocess.check_output(['nvidia-smi', '--query-gpu=utilization.gpu', '--format=csv,noheader,nounits']).decode()
+    gpu_util = [float(re.search(r'\d+', line).group()) for line in smi_output.split('\n') if line.strip()]
+    return jsonify(gpu_util)
 
 @app.errorhandler(404)
 def page_not_found(e):
