@@ -4,41 +4,35 @@ import re
 import configparser
 import os
 
-# Load the configuration variables
-config = configparser.ConfigParser()
-config.read('nvidia-endpoint-server.conf')
-
 app = Flask('nvidia endpoint server')
+
+def query_gpu(query: str):
+    try:
+        smi_output = subprocess.check_output(['nvidia-smi', '--query-gpu=' + query, '--format=csv,noheader,nounits']).decode()
+        result = [float(re.search(r'\d+.\d+', line).group()) for line in smi_output.split('\n') if line.strip()]
+        return result[0] if result else None
+    except Exception as e:
+        return str(e)
 
 @app.route('/powerusage', methods=['GET'])
 def get_power_usage():
-    smi_output = subprocess.check_output(['nvidia-smi', '--query-gpu=power.draw', '--format=csv,noheader,nounits']).decode()
-    power_usage = [float(re.search(r'\d+.\d+', line).group()) for line in smi_output.split('\n') if line.strip()]
-    return jsonify({"power_usage": power_usage[0] if power_usage else None})
+    return jsonify({"power_usage": query_gpu('power.draw')})
 
 @app.route('/temperature', methods=['GET'])
 def get_temperature():
-    smi_output = subprocess.check_output(['nvidia-smi', '--query-gpu=temperature.gpu', '--format=csv,noheader,nounits']).decode()
-    temperature = [float(re.search(r'\d+', line).group()) for line in smi_output.split('\n') if line.strip()]
-    return jsonify({"temperature": temperature[0] if temperature else None})
+    return jsonify({"temperature": query_gpu('temperature.gpu')})
 
 @app.route('/fanspeed', methods=['GET'])
 def get_fan_speed():
-    smi_output = subprocess.check_output(['nvidia-smi', '--query-gpu=fan.speed', '--format=csv,noheader,nounits']).decode()
-    fan_speed = [float(re.search(r'\d+', line).group()) for line in smi_output.split('\n') if line.strip()]
-    return jsonify({"fan_speed": fan_speed[0] if fan_speed else None})
+    return jsonify({"fan_speed": query_gpu('fan.speed')})
 
 @app.route('/memoryusage', methods=['GET'])
 def get_memory_usage():
-    smi_output = subprocess.check_output(['nvidia-smi', '--query-gpu=memory.used', '--format=csv,noheader,nounits']).decode()
-    memory_usage = [float(re.search(r'\d+', line).group()) for line in smi_output.split('\n') if line.strip()]
-    return jsonify({"memory_usage": memory_usage[0] if memory_usage else None})
+    return jsonify({"memory_usage": query_gpu('memory.used')})
 
 @app.route('/gpuutil', methods=['GET'])
 def get_gpu_util():
-    smi_output = subprocess.check_output(['nvidia-smi', '--query-gpu=utilization.gpu', '--format=csv,noheader,nounits']).decode()
-    gpu_util = [float(re.search(r'\d+', line).group()) for line in smi_output.split('\n') if line.strip()]
-    return jsonify({"gpu_util": gpu_util[0] if gpu_util else None})
+    return jsonify({"gpu_util": query_gpu('utilization.gpu')})
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -103,25 +97,21 @@ def page_not_found(e):
     """
 
 if __name__ == '__main__':
-    print("Server is starting...")
-    print("Available endpoints:")
-    print("1. /powerusage: Get the power usage of the GPU")
-    print("2. /temperature: Get the temperature of the GPU")
-    print("3. /fanspeed: Get the fan speed of the GPU")
-    print("4. /memoryusage: Get the memory usage of the GPU")
-    print("5. /gpuutil: Get the GPU utilization")
-
-    # Use the configuration variables
+    config = configparser.ConfigParser()
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    config_path = os.path.join(dir_path, 'nvidia-endpoint-server.conf')
+    config.read(config_path)
     host = config.get('DEFAULT', 'HOST')
     port = config.getint('DEFAULT', 'PORT')
     use_https = config.getboolean('DEFAULT', 'USE_HTTPS')
-    cert_path = config.get('DEFAULT', 'CERT_PATH')
-    key_path = config.get('DEFAULT', 'KEY_PATH')
+    certificate_path = os.path.join(dir_path, config.get('DEFAULT', 'CERTIFICATE_PATH'))
+    key_path = os.path.join(dir_path, config.get('DEFAULT', 'KEY_PATH'))
 
     if use_https:
-        # Run the server with SSL
-        context = (cert_path, key_path)
-        app.run(host=host, port=port, ssl_context=context)
+        if os.path.exists(certificate_path) and os.path.exists(key_path):
+            app.run(host=host, port=port, ssl_context=(certificate_path, key_path))
+        else:
+            print("Certificate or key not found. Running without SSL.")
+            app.run(host=host, port=port)
     else:
-        # Run the server without SSL
         app.run(host=host, port=port)
