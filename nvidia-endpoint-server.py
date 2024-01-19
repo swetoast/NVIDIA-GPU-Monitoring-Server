@@ -9,8 +9,12 @@ app = Flask('NVIDIA GPU Monitoring Server')
 def query_gpu(query: str):
     try:
         smi_output = subprocess.check_output(['nvidia-smi', '--query-gpu=' + query, '--format=csv,noheader,nounits']).decode()
-        result = [float(re.search(r'\d+.\d+', line).group()) for line in smi_output.split('\n') if line.strip()]
-        return result[0] if result else None
+        match = re.search(r'\d+.\d+', smi_output)
+        if match is not None:
+            result = [float(match.group()) for line in smi_output.split('\n') if line.strip()]
+            return result[0] if result else None
+        else:
+            return None
     except Exception as e:
         return str(e)
 
