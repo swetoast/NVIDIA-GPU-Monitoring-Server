@@ -10,31 +10,31 @@ app = Flask('NVIDIA GPU Monitoring Server')
 def get_power_usage():
     smi_output = subprocess.check_output(['nvidia-smi', '--query-gpu=power.draw', '--format=csv,noheader,nounits']).decode()
     power_usage = [float(re.search(r'\d+.\d+', line).group()) for line in smi_output.split('\n') if line.strip()]
-    return jsonify(power_usage)
+    return jsonify({"power_usage": power_usage[0] if power_usage else None})
 
 @app.route('/temperature', methods=['GET'])
 def get_temperature():
     smi_output = subprocess.check_output(['nvidia-smi', '--query-gpu=temperature.gpu', '--format=csv,noheader,nounits']).decode()
     temperature = [float(re.search(r'\d+', line).group()) for line in smi_output.split('\n') if line.strip()]
-    return jsonify(temperature)
+    return jsonify({"temperature": temperature[0] if temperature else None})
 
 @app.route('/fanspeed', methods=['GET'])
 def get_fan_speed():
     smi_output = subprocess.check_output(['nvidia-smi', '--query-gpu=fan.speed', '--format=csv,noheader,nounits']).decode()
     fan_speed = [float(re.search(r'\d+', line).group()) for line in smi_output.split('\n') if line.strip()]
-    return jsonify(fan_speed)
+    return jsonify({"fan_speed": fan_speed[0] if fan_speed else None})
 
 @app.route('/memoryusage', methods=['GET'])
 def get_memory_usage():
     smi_output = subprocess.check_output(['nvidia-smi', '--query-gpu=memory.used', '--format=csv,noheader,nounits']).decode()
     memory_usage = [float(re.search(r'\d+', line).group()) for line in smi_output.split('\n') if line.strip()]
-    return jsonify(memory_usage)
+    return jsonify({"memory_usage": memory_usage[0] if memory_usage else None})
 
 @app.route('/gpuutil', methods=['GET'])
 def get_gpu_util():
     smi_output = subprocess.check_output(['nvidia-smi', '--query-gpu=utilization.gpu', '--format=csv,noheader,nounits']).decode()
     gpu_util = [float(re.search(r'\d+', line).group()) for line in smi_output.split('\n') if line.strip()]
-    return jsonify(gpu_util)
+    return jsonify({"gpu_util": gpu_util[0] if gpu_util else None})
 
 @app.errorhandler(404)
 def page_not_found(e):
