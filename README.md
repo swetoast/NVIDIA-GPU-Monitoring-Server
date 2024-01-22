@@ -77,3 +77,7 @@ sensor:
 ```
 
 Please replace `IP_ADDRESS` and `PORT` with the actual IP address and port of your server.
+
+## Support
+
+If you find these lists useful, please consider giving me a star on GitHub!
