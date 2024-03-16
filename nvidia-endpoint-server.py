@@ -43,55 +43,24 @@ def page_not_found(e):
 <html>
 <head>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f0f0;
-        }
-        .container {
-            width: 80%;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        h1 {
-            color: #333;
-        }
-        h2 {
-            color: #666;
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        li {
-            margin: 10px 0;
-            color: #333;
-            background-color: #fff;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
-        }
-        a {
-            color: #007BFF;
-            text-decoration: none;
-        }
-        a:hover {
-            color: #0056b3;
-            text-decoration: underline;
-        }
+        body {font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f0f0f0;}
+        .container {width: 80%; margin: 20px auto; padding: 20px;}
+        h1, h2 {color: #333;}
+        ul {list-style: none; padding: 0;}
+        li {margin: 10px 0; color: #333; background: #fff; padding: 10px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1);}
+        a {color: #007BFF; text-decoration: none;}
+        a:hover {color: #0056b3; text-decoration: underline;}
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>NVIDIA Endpoint Server</h1>
-        <h2>Available Endpoints:</h2>
+        <h1>NVIDIA Server</h1>
         <ul>
-            <li><a href='/powerusage'>/powerusage: Get the power usage of the GPU</a></li>
-            <li><a href='/temperature'>/temperature: Get the temperature of the GPU</a></li>
-            <li><a href='/fanspeed'>/fanspeed: Get the fan speed of the GPU</a></li>
-            <li><a href='/memoryusage'>/memoryusage: Get the memory usage of the GPU</a></li>
-            <li><a href='/gpuutil'>/gpuutil: Get the GPU utilization</a></li>
+            <li><a href='/powerusage'>Power Usage</a></li>
+            <li><a href='/temperature'>Temperature</a></li>
+            <li><a href='/fanspeed'>Fan Speed</a></li>
+            <li><a href='/memoryusage'>Memory Usage</a></li>
+            <li><a href='/gpuutil'>GPU Utilization</a></li>
         </ul>
     </div>
 </body>
