@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  flask-app:
+    build: .
+    ports:
+      - "5051:5050"  # Map container port 5000 to host port 5051
+    volumes:
+      - ./nvidia-endpoint-server.py:/app/nvidia-endpoint-server.py:ro  # Mount your script read-only
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0']  # Replace with specific device ID if needed
+              capabilities: [compute, utility]
+    runtime: nvidia  # Add this line to specify NVIDIA runtime
