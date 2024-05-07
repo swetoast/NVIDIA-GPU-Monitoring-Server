@@ -37,9 +37,10 @@ KEY_PATH = /path/to/your/key.key
 This docker container uses the Official Docker image from NVIDIA and has python installed. 
 Before starting the container you can edit the docker-compose.yaml and change the exposed ports.
 
-Startiong container: 
-```docker compose up -d ```
-
+To start the container, execute the following command: 
+```bash
+docker-compose up -d
+```
 
 
 ## Home Assistant Integration
