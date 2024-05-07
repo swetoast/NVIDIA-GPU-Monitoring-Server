@@ -31,6 +31,17 @@ CERTIFICATE_PATH = /path/to/your/certificate.crt
 KEY_PATH = /path/to/your/key.key
 ```
 
+
+## Docker Container
+
+This docker container uses the Official Docker image from NVIDIA and has python installed. 
+Before starting the container you can edit the docker-compose.yaml and change the exposed ports.
+
+Startiong container: 
+```docker compose up -d ```
+
+
+
 ## Home Assistant Integration
 
 This server can be integrated with Home Assistant using the RESTful sensor. Here are some examples of how to set up the sensors in your Home Assistant configuration:
@@ -77,6 +88,7 @@ sensor:
 ```
 
 Please replace `IP_ADDRESS` and `PORT` with the actual IP address and port of your server.
+
 
 ## Support
 
