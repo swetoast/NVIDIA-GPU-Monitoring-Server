@@ -1,2 +1,2 @@
-Flask
-Werkzeug
+fastapi
+uvicorn
