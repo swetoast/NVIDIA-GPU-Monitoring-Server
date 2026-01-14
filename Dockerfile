@@ -1,24 +1,46 @@
-# Newer CUDA base image with Ubuntu 24.04
-# (see https://hub.docker.com/r/nvidia/cuda/tags for current tags)
-FROM nvidia/cuda:12.9.0-base-ubuntu24.04
+# syntax=docker/dockerfile:1.7
+# Base image includes nvidia-smi (requires NVIDIA Container Toolkit on host)
+FROM nvidia/cuda:12.4.1-runtime-ubuntu22.04 AS base
 
+ARG PYTHON_VERSION=3.10
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    UVICORN_HOST=0.0.0.0 \
+    UVICORN_PORT=8000 \
+    UVICORN_WORKERS=1 \
+    NVIDIA_LOCALE=C \
+    NVIDIA_RUN_TIMEOUT_SEC=3 \
+    NVIDIA_LOG_LEVEL=INFO \
+    NVIDIA_API_KEY_FILE=/run/secrets/nvidia_api_key
+
+RUN apt-get update -y && apt-get install -y --no-install-recommends \
+    python${PYTHON_VERSION} python3-pip python3-venv python3-distutils \
+    ca-certificates curl tini && \
+    ln -s /usr/bin/python${PYTHON_VERSION} /usr/local/bin/python && \
+    python -m pip install --upgrade pip && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN useradd -m -u 10001 appuser
 WORKDIR /app
 
-# Minimal system deps for Python; keep layers small
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 python3-pip ca-certificates \
- && rm -rf /var/lib/apt/lists/*
+# Optional: quick sanity check that nvidia-smi exists in the image
+# RUN which nvidia-smi && nvidia-smi -h >/dev/null || true
 
-# App dependencies (make sure fastapi + uvicorn are listed)
+FROM base AS build
 COPY requirements.txt .
-RUN python3 -m pip install --no-cache-dir -r requirements.txt
+RUN pip wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt
 
-# Your FastAPI app: copy and rename to a valid Python module name
-# so uvicorn can import "nvidia_endpoint:app"
-COPY nvidia-endpoint-server.py /app/nvidia_endpoint.py
+FROM base
+COPY --from=build /wheels /wheels
+RUN pip install --no-cache /wheels/* && rm -rf /wheels
+COPY app/ ./app/
 
-# The app listens on 5050 in the container
-EXPOSE 5050
+EXPOSE 8000
 
-# Simple default: run uvicorn and bind to all interfaces
-CMD ["python3", "-m", "uvicorn", "nvidia_endpoint:app", "--host", "0.0.0.0", "--port", "5050", "--workers", "1"]
+HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
+  CMD curl -fsS http://127.0.0.1:8000/health || exit 1
+
+ENTRYPOINT ["/usr/bin/tini","--"]
+CMD ["python","-m","uvicorn","app.main:app","--host","0.0.0.0","--port","8000","--workers","1"]
+
+USER appuser
