@@ -1,0 +1,35 @@
+# /etc/systemd/system/nvidia-endpoint.service
+[Unit]
+Description=NVIDIA endpoint server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+
+# Directory where your FastAPI module lives
+WorkingDirectory=/opt/nvidia-endpoint
+
+# Unbuffered logs
+Environment=PYTHONUNBUFFERED=1
+
+# Basic runtime config (edit as needed or move to EnvironmentFile)
+Environment=NVIDIA_API_KEY=changeme
+Environment=NVIDIA_CORS=*
+Environment=NVIDIA_LOCALE=C
+Environment=NVIDIA_RUN_TIMEOUT_SEC=3
+Environment=NVIDIA_LOG_LEVEL=INFO
+# Environment=NVIDIA_SMI_PATH=/usr/bin/nvidia-smi  # Uncomment if needed
+
+# Bind to all interfaces (0.0.0.0) on port 8030
+ExecStart=/usr/bin/python3 -m uvicorn nvidia_endpoint:app --host 0.0.0.0 --port 8030 --workers 1
+
+Restart=always
+RestartSec=3
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
