@@ -80,55 +80,10 @@ All are optional.
 
 Uses a newer CUDA base and runs uvicorn. Adjust as needed.
 
-```dockerfile
-FROM nvidia/cuda:12.9.0-base-ubuntu24.04
-
-WORKDIR /app
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 python3-pip ca-certificates \
- && rm -rf /var/lib/apt/lists/*
-
-COPY requirements.txt .
-RUN python3 -m pip install --no-cache-dir -r requirements.txt
-
-# Map the source into a valid Python module name for uvicorn import
-COPY nvidia-endpoint-server.py /app/nvidia_endpoint.py
-
-EXPOSE 5050
-
-CMD ["python3", "-m", "uvicorn", "nvidia_endpoint:app", "--host", "0.0.0.0", "--port", "5050", "--workers", "1"]
-```
-
-`requirements.txt` minimum:
-
-    fastapi
-    uvicorn[standard]
 
 ### docker-compose.yml
 
 Binds container port 5050 to host 5051 and exposes GPU 0. Adjust as needed.
-
-```yaml
-version: "3.8"
-
-services:
-  nvidia-endpoint:
-    build: .
-    working_dir: /app
-    command: >
-      python3 -m uvicorn nvidia_endpoint:app
-      --host 0.0.0.0 --port 5050 --workers 1
-    ports:
-      - "5051:5050"
-    volumes:
-      - ./nvidia-endpoint-server.py:/app/nvidia_endpoint.py:ro
-    environment:
-      # NVIDIA_API_KEY: "change-me"   # uncomment to require X-API-Key for /nvidia/
-    restart: unless-stopped
-    gpus:
-      - "device=0"
-```
 
 ### Run
 
@@ -142,39 +97,6 @@ curl -s http://127.0.0.1:5051/health | jq
 ## systemd (example)
 
 Minimal unit exposing the app on all interfaces. Replace paths and module name if your layout differs.
-
-```ini
-# /etc/systemd/system/nvidia-endpoint.service
-[Unit]
-Description=NVIDIA endpoint server (Uvicorn, public bind)
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-Type=simple
-User=root
-Group=root
-WorkingDirectory=/opt/nvidia-endpoint
-
-Environment=PYTHONUNBUFFERED=1
-# Optional runtime config:
-# Environment=NVIDIA_API_KEY=changeme
-# Environment=NVIDIA_CORS=*
-# Environment=NVIDIA_LOCALE=C
-# Environment=NVIDIA_RUN_TIMEOUT_SEC=3
-# Environment=NVIDIA_LOG_LEVEL=INFO
-# Environment=NVIDIA_SMI_PATH=/usr/bin/nvidia-smi
-
-ExecStart=/usr/bin/python3 -m uvicorn nvidia_endpoint:app --host 0.0.0.0 --port 8030 --workers 1
-
-Restart=always
-RestartSec=3
-StandardOutput=journal
-StandardError=journal
-
-[Install]
-WantedBy=multi-user.target
-```
 
 Enable and start:
 
