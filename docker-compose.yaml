@@ -1,18 +1,25 @@
-version: '3.8'
-
+version: "3.8"
 services:
-  flask-app:
+  nvidia-endpoint:
     build: .
+    working_dir: /app
+    command: >
+      python -m uvicorn nvidia_endpoint:app --host 0.0.0.0 --port 5050 --workers 1
     ports:
-      - "5051:5050"  # Map container port 5000 to host port 5051
+      - "5051:5050"  # Map container port 5050 to host 5051
     volumes:
-      - ./nvidia-endpoint-server.py:/app/nvidia-endpoint-server.py:ro  # Mount your script read-only
+      # Ensure the module name matches uvicorn target: nvidia_endpoint:app
+      - ./nvidia_endpoint.py:/app/nvidia_endpoint.py:ro
+    environment:
+      # App settings (optional but useful)
+      NVIDIA_API_KEY: "${NVIDIA_API_KEY}"        # Set in your shell or .env
+      NVIDIA_CORS: "${NVIDIA_CORS:-*}"           # Allow all origins by default
+      NVIDIA_LOCALE: "C"
+      NVIDIA_RUN_TIMEOUT_SEC: "3"
+      # NVIDIA Container Toolkit hints (Compose runtime)
+      NVIDIA_VISIBLE_DEVICES: "0"
+      NVIDIA_DRIVER_CAPABILITIES: "compute,utility"
     restart: unless-stopped
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              device_ids: ['0']  # Replace with specific device ID if needed
-              capabilities: [compute, utility]
-    runtime: nvidia  # Add this line to specify NVIDIA runtime
+    # Compose v2 GPU support (no deprecated 'runtime: nvidia')
+    gpus:
+      - "device=0"
