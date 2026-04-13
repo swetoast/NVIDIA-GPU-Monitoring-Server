@@ -21,9 +21,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 API_KEY = os.getenv("NVIDIA_API_KEY")
 ALLOWED_ORIGINS = os.getenv("NVIDIA_CORS", "")
-NVIDIA_SMI_PATH_ENV = os.getenv("NVIDIA_SMI_PATH")  # e.g., Windows: C:\Program Files\NVIDIA Corporation\NVSMI\nvidia-smi.exe
+NVIDIA_SMI_PATH_ENV = os.getenv("NVIDIA_SMI_PATH")
 LOG_LEVEL = os.getenv("NVIDIA_LOG_LEVEL", "INFO").upper()
-LOCALE = os.getenv("NVIDIA_LOCALE", "C")            # Linux only (nvidia-smi labels)
+LOCALE = os.getenv("NVIDIA_LOCALE", "C")
 RUN_TIMEOUT_SEC = float(os.getenv("NVIDIA_RUN_TIMEOUT_SEC", "3"))
 
 logging.basicConfig(
@@ -122,18 +122,15 @@ def parse_nvsmilog(text: str) -> Dict[str, Any]:
         indent = len(raw) - len(raw.lstrip(' '))
         s = raw.strip()
 
-        # unwind to this indent
         while stack and stack[-1][0] >= indent:
             stack.pop()
             current = stack[-1][1] if stack else root
 
-        # Strict device header
         if GPU_ADDR_RE.match(s):
             current = root
             push(indent, s)
             continue
 
-        # key : value → keep EXACT value
         m = KV_RE.match(raw)
         if m:
             key = m.group(1).strip()
@@ -141,7 +138,6 @@ def parse_nvsmilog(text: str) -> Dict[str, Any]:
             current[key] = val
             continue
 
-        # section header (no colon)
         if ':' not in s:
             push(indent, s)
             continue
