@@ -17,8 +17,6 @@ from typing import Any, Dict, List, Tuple, Optional
 from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-# ------------------------- Config & logging -------------------------
-
 API_KEY = os.getenv("NVIDIA_API_KEY")
 ALLOWED_ORIGINS = os.getenv("NVIDIA_CORS", "")
 NVIDIA_SMI_PATH_ENV = os.getenv("NVIDIA_SMI_PATH")
