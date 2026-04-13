@@ -2,7 +2,7 @@
 """
 Endpoints:
   GET /health    - lightweight status & config
-  GET /docs/     - Swagger UI (FastAPI auto)
+  GET /docs/     - Swagger UI
   GET /nvidia/   - run `nvidia-smi -q` now, parse, and return sanitized raw subtree for the first GPU
 """
 
@@ -32,20 +32,14 @@ logging.basicConfig(
 )
 logger = logging.getLogger("nvidia_endpoint")
 
-# ------------------------- FastAPI app -------------------------
-
 app = FastAPI(title="NVIDIA GPU Endpoint API", version="4.7.1", openapi_url="/openapi.json")
 
 origins = [o.strip() for o in ALLOWED_ORIGINS.split(",") if o.strip()] if ALLOWED_ORIGINS.strip() else ["*"]
 app.add_middleware(CORSMiddleware, allow_origins=origins, allow_methods=["GET"], allow_headers=["*"])
 
-# ------------------------- Auth -------------------------
-
 def require_api_key(x_api_key: Optional[str] = Header(default=None)) -> None:
     if API_KEY and x_api_key != API_KEY:
         raise HTTPException(status_code=401, detail="Invalid or missing API key")
-
-# ------------------------- Common helpers -------------------------
 
 def run_command(cmd: List[str], timeout: float = RUN_TIMEOUT_SEC) -> str:
     """Run a command and return decoded stdout; return empty string on error."""
@@ -74,8 +68,6 @@ def sanitize_json(obj: Any, *, max_depth: int = 40) -> Any:
             return [_s(v, d + 1) for v in x]
         return str(x)
     return _s(obj, 0)
-
-# ------------------------- NVIDIA helpers -------------------------
 
 def find_nvidia_smi() -> Optional[str]:
     """Find nvidia-smi path from env or PATH (Linux/Windows)."""
@@ -169,8 +161,6 @@ def run_nvidia_smi_q() -> str:
     if proc.returncode != 0:
         raise RuntimeError(proc.stderr.strip() or "nvidia-smi failed")
     return proc.stdout
-
-# ------------------------- Endpoints -------------------------
 
 @app.get("/health")
 def health() -> Dict[str, Any]:
